@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysStoredFileMapper">
+
+    <resultMap id="SysStoredFileResult" type="com.ruoyi.system.domain.SysStoredFile">
+        <id property="id" column="id"/>
+        <result property="bizType" column="biz_type"/>
+        <result property="bizId" column="biz_id"/>
+        <result property="originalName" column="original_name"/>
+        <result property="extension" column="extension"/>
+        <result property="mimeType" column="mime_type"/>
+        <result property="storagePath" column="storage_path"/>
+        <result property="storageUrl" column="storage_url"/>
+        <result property="fileSize" column="file_size"/>
+        <result property="sha256" column="sha256"/>
+        <result property="uploaderUserId" column="uploader_user_id"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="selectById" parameterType="long" resultMap="SysStoredFileResult">
+        SELECT *
+        FROM sys_stored_file
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectBySha256" parameterType="string" resultMap="SysStoredFileResult">
+        SELECT *
+        FROM sys_stored_file
+        WHERE sha256 = #{sha256}
+    </select>
+
+    <insert id="insert" parameterType="com.ruoyi.system.domain.SysStoredFile" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_stored_file(biz_type, biz_id, original_name, extension, mime_type,
+                                    storage_path, storage_url, file_size, sha256, uploader_user_id,
+                                    created_at, updated_at)
+        VALUES (#{bizType}, #{bizId}, #{originalName}, #{extension}, #{mimeType},
+                #{storagePath}, #{storageUrl}, #{fileSize}, #{sha256}, #{uploaderUserId},
+                NOW(), NOW())
+    </insert>
+
+    <update id="updateBizBinding">
+        UPDATE sys_stored_file
+        SET biz_type   = #{bizType},
+            biz_id     = #{bizId},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+</mapper>
