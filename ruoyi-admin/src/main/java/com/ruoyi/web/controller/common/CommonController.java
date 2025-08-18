@@ -165,7 +165,7 @@ public class CommonController {
      * @param request
      * @param response
      */
-    @GetMapping(value = "/file/stream{id}")
+    @GetMapping(value = "/file/stream/{id}")
     public void stream(@PathVariable("id") Long id, HttpServletRequest request, HttpServletResponse response) {
         SysStoredFile rec = sysStoredFileService.getById(id);
         if (rec == null) {
