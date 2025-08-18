@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 
 
 @Service
@@ -52,5 +53,10 @@ public class SysStoredFileServiceImpl implements ISysStoredFileService {
     @Override
     public int bindBiz(Long fileId, String bizType, Long bizId) {
         return sysStoredFileMapper.updateBizBinding(fileId, bizType, bizId);
+    }
+
+    @Override
+    public List<SysStoredFile> selectList(String bizType, String originalName) {
+        return sysStoredFileMapper.selectList(bizType, originalName);
     }
 }

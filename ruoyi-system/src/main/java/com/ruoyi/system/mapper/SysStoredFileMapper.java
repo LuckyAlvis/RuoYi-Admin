@@ -3,6 +3,7 @@ package com.ruoyi.system.mapper;
 import com.ruoyi.system.domain.SysStoredFile;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import java.util.List;
 
 @Mapper
 public interface SysStoredFileMapper {
@@ -13,4 +14,7 @@ public interface SysStoredFileMapper {
     int insert(SysStoredFile file);
 
     int updateBizBinding(@Param("id") Long id, @Param("bizType") String bizType, @Param("bizId") Long bizId);
+
+    List<SysStoredFile> selectList(@Param("bizType") String bizType,
+                                   @Param("originalName") String originalName);
 }

@@ -2,6 +2,7 @@ package com.ruoyi.system.service;
 
 import com.ruoyi.system.domain.SysStoredFile;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.List;
 
 public interface ISysStoredFileService {
     SysStoredFile getById(Long id);
@@ -11,4 +12,6 @@ public interface ISysStoredFileService {
     SysStoredFile saveUploadedFile(MultipartFile file, String storagePath, String storageUrl, Long uploaderUserId);
 
     int bindBiz(Long fileId, String bizType, Long bizId);
+
+    List<SysStoredFile> selectList(String bizType, String originalName);
 }

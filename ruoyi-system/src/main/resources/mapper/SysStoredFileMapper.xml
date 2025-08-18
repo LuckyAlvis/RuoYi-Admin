@@ -47,4 +47,18 @@
         WHERE id = #{id}
     </update>
 
+    <select id="selectList" resultMap="SysStoredFileResult">
+        SELECT *
+        FROM sys_stored_file
+        <where>
+            <if test="bizType != null and bizType != ''">
+                AND biz_type = #{bizType}
+            </if>
+            <if test="originalName != null and originalName != ''">
+                AND original_name LIKE CONCAT('%', #{originalName}, '%')
+            </if>
+        </where>
+        ORDER BY id DESC
+    </select>
+
 </mapper>
