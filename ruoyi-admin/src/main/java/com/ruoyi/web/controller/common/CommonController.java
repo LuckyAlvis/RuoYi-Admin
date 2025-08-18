@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.common;
 
+import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -165,6 +166,7 @@ public class CommonController {
      * @param request
      * @param response
      */
+    @Anonymous
     @GetMapping(value = "/file/stream/{id}")
     public void stream(@PathVariable("id") Long id, HttpServletRequest request, HttpServletResponse response) {
         SysStoredFile rec = sysStoredFileService.getById(id);
