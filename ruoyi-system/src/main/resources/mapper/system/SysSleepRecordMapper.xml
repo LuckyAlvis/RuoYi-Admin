@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysSleepRecordMapper">
+
+    <resultMap id="SysSleepRecordResult" type="com.ruoyi.system.domain.SysSleepRecord">
+        <id column="id" property="id"/>
+        <result column="record_date" property="recordDate"/>
+        <result column="sleep_time" property="sleepTime"/>
+        <result column="wake_time" property="wakeTime"/>
+        <result column="total_minutes" property="totalMinutes"/>
+        <result column="remark" property="remark"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="del_flag" property="delFlag"/>
+    </resultMap>
+
+    <select id="selectByDateRange" parameterType="map" resultMap="SysSleepRecordResult">
+        SELECT id,
+               record_date,
+               sleep_time,
+               wake_time,
+               total_minutes,
+               remark,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               del_flag
+        FROM sys_sleep_record
+        WHERE del_flag = '0'
+          AND record_date BETWEEN #{start} AND #{end}
+          AND create_by = #{username}
+        ORDER BY record_date ASC
+    </select>
+
+    <select id="selectByDateAndUser" parameterType="map" resultMap="SysSleepRecordResult">
+        SELECT id,
+               record_date,
+               sleep_time,
+               wake_time,
+               total_minutes,
+               remark,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               del_flag
+        FROM sys_sleep_record
+        WHERE del_flag = '0'
+          AND record_date = #{date}
+          AND create_by = #{username} LIMIT 1
+    </select>
+
+    <insert id="insert" parameterType="com.ruoyi.system.domain.SysSleepRecord" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_sleep_record (record_date, sleep_time, wake_time, total_minutes, remark,
+                                      create_by, create_time, update_by, update_time, del_flag)
+        VALUES (#{recordDate}, #{sleepTime}, #{wakeTime}, #{totalMinutes}, #{remark},
+                #{createBy}, NOW(), #{updateBy}, NOW(), #{delFlag})
+    </insert>
+
+    <update id="updateById" parameterType="com.ruoyi.system.domain.SysSleepRecord">
+        UPDATE sys_sleep_record
+        <set>
+            <if test="recordDate != null">record_date = #{recordDate},</if>
+            <if test="sleepTime != null">sleep_time = #{sleepTime},</if>
+            <if test="wakeTime != null">wake_time = #{wakeTime},</if>
+            <if test="totalMinutes != null">total_minutes = #{totalMinutes},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            update_time = NOW()
+        </set>
+        WHERE id = #{id}
+    </update>
+</mapper>
