@@ -13,6 +13,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.filter.CorsFilter;
@@ -96,9 +99,16 @@ public class SecurityConfig {
         return httpSecurity
                 // CSRF禁用，因为不使用session
                 .csrf(csrf -> csrf.disable())
-                // 禁用HTTP响应标头
-                .headers((headersCustomizer) -> {
-                    headersCustomizer.cacheControl(cache -> cache.disable()).frameOptions(options -> options.sameOrigin());
+                // 响应头：本地开发允许跨端口 iframe 预览
+                .headers(headers -> {
+                    headers
+                        .cacheControl(cache -> cache.disable())
+                        // 关闭 X-Frame-Options，避免不同端口被 sameorigin 拦截
+                        .frameOptions(frame -> frame.disable())
+                        // 使用 CSP 明确允许前端本地域名嵌入（按需增减端口）
+                        .contentSecurityPolicy(csp -> csp.policyDirectives(
+                                "frame-ancestors 'self' http://localhost:1024 http://localhost:18081"
+                        ));
                 })
                 // 认证失败处理类
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
@@ -131,5 +141,24 @@ public class SecurityConfig {
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    /**
+     * 自定义防火墙：允许 URL 中的分号，解决包含 ";" 的文件名预览被拦截问题
+     * 注意：放开分号需配合服务端路径解析与参数校验，避免路径穿越等风险
+     */
+    @Bean
+    public HttpFirewall httpFirewall() {
+        StrictHttpFirewall firewall = new StrictHttpFirewall();
+        firewall.setAllowSemicolon(true);
+        // 如需兼容更多本地预览场景，可按需放开以下两项
+        // firewall.setAllowUrlEncodedSlash(true);
+        // firewall.setAllowUrlEncodedPercent(true);
+        return firewall;
+    }
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer(HttpFirewall firewall) {
+        return (web) -> web.httpFirewall(firewall);
     }
 }
