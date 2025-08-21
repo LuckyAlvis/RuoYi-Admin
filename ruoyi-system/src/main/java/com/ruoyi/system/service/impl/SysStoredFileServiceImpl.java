@@ -31,10 +31,10 @@ public class SysStoredFileServiceImpl implements ISysStoredFileService {
     @Override
     public SysStoredFile saveUploadedFile(MultipartFile file, String storagePath, String storageUrl, Long uploaderUserId) {
         String sha256 = FileUtils.sha256Hex(file);
-        SysStoredFile existed = sysStoredFileMapper.selectBySha256(sha256);
-        if (existed != null) {
-            return existed;
-        }
+//        SysStoredFile existed = sysStoredFileMapper.selectBySha256(sha256);
+//        if (existed != null) {
+//            return existed;
+//        }
         SysStoredFile rec = new SysStoredFile();
         rec.setBizType(null);
         rec.setBizId(null);
