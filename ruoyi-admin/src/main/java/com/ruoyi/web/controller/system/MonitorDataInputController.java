@@ -15,7 +15,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 /**
- * 监控数据录入 Controller（例如：睡眠数据录入）
+ * 监控数据录入
  */
 @RestController
 @RequestMapping("/system/monitor/input")

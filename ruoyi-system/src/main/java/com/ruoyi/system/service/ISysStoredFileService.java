@@ -13,5 +13,7 @@ public interface ISysStoredFileService {
 
     int bindBiz(Long fileId, String bizType, Long bizId);
 
-    List<SysStoredFile> selectList(String bizType, String originalName);
+    List<SysStoredFile> selectList(String bizType, String originalName, String mimeType);
+
+    int deleteById(Long id);
 }

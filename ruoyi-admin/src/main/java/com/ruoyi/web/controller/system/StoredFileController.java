@@ -8,7 +8,9 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.file.FileUploadUtils;
 import com.ruoyi.framework.config.ServerConfig;
 import com.ruoyi.system.domain.SysStoredFile;
+import com.ruoyi.system.domain.SysBook;
 import com.ruoyi.system.service.ISysStoredFileService;
+import com.ruoyi.system.service.ISysBookService;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,20 +26,28 @@ public class StoredFileController extends BaseController {
     private ISysStoredFileService sysStoredFileService;
     @Autowired
     private ServerConfig serverConfig;
+    @Autowired
+    private ISysBookService sysBookService;
 
 //    @PreAuthorize("@ss.hasPermi('system:book:list')")
     @GetMapping("/list")
     public TableDataInfo list(@RequestParam(value = "bizType", required = false) String bizType,
-                              @RequestParam(value = "originalName", required = false) String originalName) {
+                              @RequestParam(value = "originalName", required = false) String originalName,
+                              @RequestParam(value = "mimeType", required = false) String mimeType) {
         startPage();
-        List<SysStoredFile> list = sysStoredFileService.selectList(bizType, originalName);
+        List<SysStoredFile> list = sysStoredFileService.selectList(bizType, originalName, mimeType);
         return getDataTable(list);
     }
 
 //    @PreAuthorize("@ss.hasPermi('system:book:upload')")
     @PostMapping("/upload")
     public AjaxResult upload(@RequestParam("file") MultipartFile file,
-                             @RequestParam(value = "bizId", required = false) Long bizId) throws Exception {
+                             @RequestParam(value = "bizId", required = false) Long bizId,
+                             @RequestParam(value = "title", required = false) String title,
+                             @RequestParam(value = "author", required = false) String author,
+                             @RequestParam(value = "wordCount", required = false) Integer wordCount,
+                             @RequestParam(value = "pageCount", required = false) Integer pageCount,
+                             @RequestParam(value = "description", required = false) String description) throws Exception {
         String filePath = RuoYiConfig.getUploadPath();
         String fileName = FileUploadUtils.upload(filePath, file);
         String url = serverConfig.getUrl() + fileName;
@@ -52,6 +62,25 @@ public class StoredFileController extends BaseController {
         ajax.put("newFileName", FilenameUtils.getName(fileName));
         ajax.put("originalFilename", file.getOriginalFilename());
         ajax.put("fileId", rec.getId());
+        // 如果包含书籍元数据，则创建 sys_book 记录
+        if (title != null && author != null && !title.isEmpty() && !author.isEmpty()) {
+            SysBook book = new SysBook();
+            book.setStoredFileId(rec.getId());
+            book.setTitle(title);
+            book.setAuthor(author);
+            book.setWordCount(wordCount);
+            book.setPageCount(pageCount);
+            book.setDescription(description);
+            book.setUploaderUserId(userId);
+            sysBookService.insert(book);
+            ajax.put("bookId", book.getId());
+        }
         return ajax;
+    }
+
+    @DeleteMapping("/{id}")
+    public AjaxResult delete(@PathVariable Long id) {
+        int result = sysStoredFileService.deleteById(id);
+        return result > 0 ? AjaxResult.success() : AjaxResult.error("删除失败");
     }
 }

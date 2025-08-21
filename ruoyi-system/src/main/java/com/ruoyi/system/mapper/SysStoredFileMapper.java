@@ -17,4 +17,10 @@ public interface SysStoredFileMapper {
 
     List<SysStoredFile> selectList(@Param("bizType") String bizType,
                                    @Param("originalName") String originalName);
+
+    List<SysStoredFile> selectList(@Param("bizType") String bizType,
+                                   @Param("originalName") String originalName,
+                                   @Param("mimeType") String mimeType);
+
+    int deleteById(@Param("id") Long id);
 }

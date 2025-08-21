@@ -57,8 +57,22 @@
             <if test="originalName != null and originalName != ''">
                 AND original_name LIKE CONCAT('%', #{originalName}, '%')
             </if>
+            <if test="mimeType != null and mimeType != ''">
+                <choose>
+                    <when test="mimeType == 'image'">
+                        AND mime_type LIKE 'image/%'
+                    </when>
+                    <otherwise>
+                        AND mime_type = #{mimeType}
+                    </otherwise>
+                </choose>
+            </if>
         </where>
         ORDER BY id DESC
     </select>
+
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM sys_stored_file WHERE id = #{id}
+    </delete>
 
 </mapper>
